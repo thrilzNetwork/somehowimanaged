@@ -5,113 +5,399 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Somehow I Managed</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Page ──────────────────────────────────────────── */
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f5;
+      background: #f4f4f5;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      padding: 1rem;
+      padding: 1.25rem;
     }
+
+    /* ── Card ──────────────────────────────────────────── */
     .card {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      padding: 2.5rem;
-      max-width: 440px;
+      border-radius: 16px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+      padding: 2.5rem 2rem;
+      max-width: 420px;
       width: 100%;
     }
-    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; color: #111; }
-    p { color: #555; margin-bottom: 1.5rem; line-height: 1.5; }
-    label { display: block; font-size: 0.875rem; font-weight: 500; color: #333; margin-bottom: 0.35rem; }
-    input {
-      width: 100%;
-      padding: 0.65rem 0.9rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      transition: border-color 0.2s;
+
+    /* ── Gate state ────────────────────────────────────── */
+    #gate .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #4f46e5;
+      margin-bottom: 0.75rem;
     }
-    input:focus { outline: none; border-color: #4f46e5; }
-    button {
+    #gate h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #111;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+    #gate .subtitle {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      margin-bottom: 1.75rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.02em;
+    }
+    input[type="text"],
+    input[type="email"] {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid #e4e4e7;
+      border-radius: 10px;
+      font-size: 0.975rem;
+      color: #111;
+      background: #fafafa;
+      margin-bottom: 0.9rem;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      background: #fff;
+    }
+    #submit-btn {
+      width: 100%;
+      padding: 0.8rem;
       background: #4f46e5;
       color: #fff;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 0.25rem;
     }
-    button:hover { background: #4338ca; }
-    button:disabled { background: #a5b4fc; cursor: not-allowed; }
-    #message {
-      margin-top: 1rem;
-      padding: 0.75rem;
+    #submit-btn:hover  { background: #4338ca; }
+    #submit-btn:active { transform: scale(0.98); }
+    #submit-btn:disabled { background: #a5b4fc; cursor: not-allowed; transform: none; }
+
+    #gate-msg {
+      margin-top: 0.9rem;
+      padding: 0.7rem 0.9rem;
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       display: none;
     }
-    #message.success { background: #ecfdf5; color: #065f46; display: block; }
-    #message.error   { background: #fef2f2; color: #991b1b; display: block; }
+    #gate-msg.error { background: #fef2f2; color: #991b1b; display: block; }
+
+    #gate .fine {
+      margin-top: 1.1rem;
+      font-size: 0.75rem;
+      color: #aaa;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ── Access state ──────────────────────────────────── */
+    #access { display: none; }
+
+    .access-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #ecfdf5;
+      color: #065f46;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+      margin-bottom: 1.25rem;
+    }
+    .access-badge::before {
+      content: '';
+      display: block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    #access h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #111;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    #welcome-line {
+      font-size: 1rem;
+      color: #4f46e5;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    #access .body-text {
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 0 0 1.5rem;
+    }
+
+    .follow-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 0.85rem;
+    }
+
+    /* ── Social buttons ────────────────────────────────── */
+    .social-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: filter 0.15s, transform 0.1s;
+      border: none;
+      color: #fff;
+    }
+    .social-btn:hover  { filter: brightness(1.08); }
+    .social-btn:active { transform: scale(0.97); }
+
+    .social-btn.instagram { background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4); }
+    .social-btn.tiktok    { background: #010101; }
+    .social-btn.twitter   { background: #000; }
+    .social-btn.spotify   { background: #1db954; }
+
+    .social-btn svg {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    #access .footnote {
+      margin-top: 1.5rem;
+      font-size: 0.78rem;
+      color: #bbb;
+      text-align: center;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
+
+  <!-- ═══════════════════════════════════════════════════
+       GATE STATE — shown to new visitors
+  ════════════════════════════════════════════════════ -->
+  <div id="gate" class="card">
+    <p class="eyebrow">Early Access</p>
     <h1>Somehow I Managed</h1>
-    <p>Join our mailing list and we'll send you a welcome email right away.</p>
-    <form id="signup-form">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" placeholder="Your name" required />
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="you@example.com" required />
-      <button type="submit" id="submit-btn">Subscribe</button>
+    <p class="subtitle">
+      Get inside access to the book, behind-the-scenes, and everything we're building.
+      Drop your info and you're in — instantly.
+    </p>
+
+    <form id="signup-form" novalidate>
+      <label for="name">Your name</label>
+      <input type="text"  id="name"  name="name"  placeholder="First Last"          autocomplete="name"  required />
+
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com"     autocomplete="email" required />
+
+      <button type="submit" id="submit-btn">Get Access</button>
     </form>
-    <div id="message"></div>
+
+    <div id="gate-msg"></div>
+    <p class="fine">No spam. Unsubscribe any time.</p>
   </div>
 
+
+  <!-- ═══════════════════════════════════════════════════
+       ACCESS STATE — shown after signup (persisted)
+  ════════════════════════════════════════════════════ -->
+  <div id="access" class="card">
+    <div class="access-badge">Access Granted</div>
+
+    <h1>You're in.</h1>
+    <p id="welcome-line"></p>
+    <p class="body-text">
+      You're on the <strong>Somehow I Managed</strong> list.
+      We'll keep you posted on the book, drops, and everything behind the scenes.
+    </p>
+
+    <hr class="divider" />
+
+    <p class="follow-label">Follow along</p>
+    <div class="social-grid">
+
+      <!-- ─ Instagram ─────────────────────────────────────
+           Update YOUR_IG_HANDLE with your Instagram username
+           e.g. somehowimanaged  (no @)
+      ──────────────────────────────────────────────────── -->
+      <a class="social-btn instagram"
+         href="https://instagram.com/YOUR_IG_HANDLE"
+         data-app="instagram://user?username=YOUR_IG_HANDLE"
+         onclick="openSocial(event)">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+        </svg>
+        Instagram
+      </a>
+
+      <!-- ─ TikTok ───────────────────────────────────────
+           Update YOUR_TT_HANDLE with your TikTok username
+           e.g. somehowimanaged  (no @)
+      ──────────────────────────────────────────────────── -->
+      <a class="social-btn tiktok"
+         href="https://tiktok.com/@YOUR_TT_HANDLE"
+         data-app="tiktok://user/@YOUR_TT_HANDLE"
+         onclick="openSocial(event)">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/>
+        </svg>
+        TikTok
+      </a>
+
+      <!-- ─ Add more social links by copying a block above ─
+           Common app URL schemes:
+             Twitter/X:  twitter://user?screen_name=HANDLE  → https://x.com/HANDLE
+             YouTube:    vnd.youtube://CHANNEL_ID           → https://youtube.com/@HANDLE
+             Spotify:    spotify:user:USER_ID               → https://open.spotify.com/user/ID
+             Facebook:   fb://page/PAGE_ID                  → https://facebook.com/PAGE
+      ──────────────────────────────────────────────────── -->
+
+    </div>
+
+    <p class="footnote">Check your inbox for a welcome email. We'll be in touch.</p>
+  </div>
+
+
   <script>
+    // ── Constants ────────────────────────────────────────────────────────────
+    const STORAGE_KEY = 'sim_member'; // localStorage key
+
+    // ── On page load: check if already a member ──────────────────────────────
+    (function init() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          const { name } = JSON.parse(stored);
+          showAccess(name);
+        } catch {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    })();
+
+    // ── Show the access panel ─────────────────────────────────────────────────
+    function showAccess(name) {
+      document.getElementById('gate').style.display   = 'none';
+      document.getElementById('access').style.display = 'block';
+      if (name) {
+        const first = name.split(' ')[0];
+        document.getElementById('welcome-line').textContent = `Hey ${first}! 👋`;
+      }
+    }
+
+    // ── Form submit ───────────────────────────────────────────────────────────
     const form = document.getElementById('signup-form');
     const btn  = document.getElementById('submit-btn');
-    const msg  = document.getElementById('message');
+    const msg  = document.getElementById('gate-msg');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      btn.disabled = true;
-      btn.textContent = 'Subscribing…';
-      msg.className = '';
+      btn.disabled    = true;
+      btn.textContent = 'Getting you in…';
+      msg.className   = '';
       msg.style.display = 'none';
 
       const name  = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
 
       try {
-        const res = await fetch('/.netlify/functions/subscribe', {
-          method: 'POST',
+        const res  = await fetch('/.netlify/functions/subscribe', {
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email }),
+          body:    JSON.stringify({ name, email }),
         });
         const data = await res.json();
+
         if (res.ok) {
-          msg.className = 'success';
-          msg.textContent = data.message || 'You\'re subscribed! Check your inbox.';
-          form.reset();
+          // Save to localStorage so this device never shows the gate again
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, email, ts: Date.now() }));
+          showAccess(name);
         } else {
-          throw new Error(data.error || 'Something went wrong.');
+          throw new Error(data.error || 'Something went wrong. Please try again.');
         }
       } catch (err) {
-        msg.className = 'error';
-        msg.textContent = err.message;
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Subscribe';
+        msg.className     = 'error';
+        msg.textContent   = err.message;
+        msg.style.display = 'block';
+        btn.disabled      = false;
+        btn.textContent   = 'Get Access';
       }
     });
+
+    // ── Social deep-link handler ──────────────────────────────────────────────
+    // Tries to open the native app first.
+    // If the app isn't installed, falls back to the web URL after 750ms.
+    function openSocial(e) {
+      e.preventDefault();
+      const appUrl = e.currentTarget.dataset.app;
+      const webUrl = e.currentTarget.href;
+
+      let appOpened = false;
+      const onHide = function() {
+        // Page went to background = app opened
+        appOpened = true;
+        document.removeEventListener('visibilitychange', onHide);
+      };
+      document.addEventListener('visibilitychange', onHide);
+
+      // Attempt app open
+      window.location.href = appUrl;
+
+      // Fallback: open web if app didn't intercept within 750ms
+      setTimeout(function() {
+        document.removeEventListener('visibilitychange', onHide);
+        if (!appOpened) {
+          window.open(webUrl, '_blank', 'noopener,noreferrer');
+        }
+      }, 750);
+    }
   </script>
+
 </body>
 </html>
