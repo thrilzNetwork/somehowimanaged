@@ -1,0 +1,9 @@
+{
+  "name": "somehowimanaged",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Somehow I Managed – Netlify + Brevo signup site",
+  "engines": {
+    "node": ">=18"
+  }
+}
