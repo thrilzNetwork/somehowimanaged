@@ -20,7 +20,7 @@ if (!BREVO_API_KEY) {
   throw new Error('BREVO_API_KEY environment variable is not set');
 }
 
-const SENDER_EMAIL = process.env.SENDER_EMAIL || 'hello@somehowimanaged.com';
+const SENDER_EMAIL = process.env.SENDER_EMAIL || 'hello@quantumhospitalitysolutions.com';
 const SENDER_NAME  = process.env.SENDER_NAME  || 'Somehow I Managed';
 const BREVO_LIST_ID = 2;
 
