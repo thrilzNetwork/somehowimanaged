@@ -306,20 +306,41 @@
 
   <script>
     // ── Constants ────────────────────────────────────────────────────────────
-    const STORAGE_KEY = 'sim_member'; // localStorage key
+    const STORAGE_KEY = 'sim_member'; // permanent: set on successful signup
+    const DRAFT_KEY   = 'sim_draft';  // temporary: saves form typing in progress
 
-    // ── On page load: check if already a member ──────────────────────────────
+    // ── On page load: restore state ───────────────────────────────────────────
     (function init() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
+        // Already signed up — go straight to access, no form
         try {
           const { name } = JSON.parse(stored);
           showAccess(name);
         } catch {
           localStorage.removeItem(STORAGE_KEY);
         }
+      } else {
+        // Not yet a member — restore any in-progress typing so they don't lose it
+        try {
+          const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+          if (draft) {
+            if (draft.name)  document.getElementById('name').value  = draft.name;
+            if (draft.email) document.getElementById('email').value = draft.email;
+          }
+        } catch { /* ignore corrupt draft */ }
       }
     })();
+
+    // ── Save draft as user types (survives tab switches, mobile kills, reloads) ─
+    document.getElementById('name').addEventListener('input', saveDraft);
+    document.getElementById('email').addEventListener('input', saveDraft);
+    function saveDraft() {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        name:  document.getElementById('name').value,
+        email: document.getElementById('email').value,
+      }));
+    }
 
     // ── Show the access panel ─────────────────────────────────────────────────
     function showAccess(name) {
@@ -355,7 +376,8 @@
         const data = await res.json();
 
         if (res.ok) {
-          // Save to localStorage so this device never shows the gate again
+          // Lock in access permanently, discard the in-progress draft
+          localStorage.removeItem(DRAFT_KEY);
           localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, email, ts: Date.now() }));
           showAccess(name);
         } else {

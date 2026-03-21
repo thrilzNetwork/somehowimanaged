@@ -19,11 +19,13 @@
  *
  * Optional env vars:
  *   SENDER_NAME            – Display name (default: "Somehow I Managed")
+ *   NOTIFY_EMAIL           – Your personal email to receive new-signup alerts
  */
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const SENDER_EMAIL  = process.env.SENDER_EMAIL  || 'hello@quantumhospitalitysolutions.com';
 const SENDER_NAME   = process.env.SENDER_NAME   || 'Somehow I Managed';
+const NOTIFY_EMAIL  = process.env.NOTIFY_EMAIL; // owner notification (optional)
 const BREVO_LIST_ID = 2;
 
 const SUPABASE_URL  = process.env.SUPABASE_URL;
@@ -188,8 +190,31 @@ exports.handler = async (event) => {
     });
   }
 
+  // ── 6. Notify the owner of every new signup ───────────────────────────────
+  if (NOTIFY_EMAIL) {
+    const signupTime = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' });
+    await brevo('POST', '/v3/smtp/email', {
+      sender: { name: SENDER_NAME, email: SENDER_EMAIL },
+      to:     [{ email: NOTIFY_EMAIL }],
+      subject: `New signup: ${name}`,
+      htmlContent: `
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:480px;margin:0 auto;padding:1.5rem;color:#111">
+          <p style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">📬 New signup on Somehow I Managed</p>
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+            <tr><td style="padding:0.4rem 0;color:#666;width:80px">Name</td><td style="padding:0.4rem 0;font-weight:600">${name}</td></tr>
+            <tr><td style="padding:0.4rem 0;color:#666">Email</td><td style="padding:0.4rem 0;font-weight:600">${email}</td></tr>
+            <tr><td style="padding:0.4rem 0;color:#666">Country</td><td style="padding:0.4rem 0">${country || '—'}</td></tr>
+            <tr><td style="padding:0.4rem 0;color:#666">Source</td><td style="padding:0.4rem 0;font-size:0.8rem;color:#888">${source}</td></tr>
+            <tr><td style="padding:0.4rem 0;color:#666">Time</td><td style="padding:0.4rem 0">${signupTime} ET</td></tr>
+          </table>
+        </div>
+      `,
+      textContent: `New signup!\n\nName: ${name}\nEmail: ${email}\nCountry: ${country || '—'}\nSource: ${source}\nTime: ${signupTime} ET`,
+    }).catch(err => console.error('Owner notification failed:', err));
+  }
+
   if (emailRes.status !== 201) {
-    console.error('Brevo email error:', emailRes);
+    console.error('Brevo email error:', emailRes.status, JSON.stringify(emailRes.body));
     return json(207, {
       message: `You're on the list, ${firstName}! (Welcome email delayed — check Brevo sender verification.)`,
       emailError: emailRes.body?.message,
