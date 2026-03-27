@@ -25,7 +25,6 @@
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const SENDER_EMAIL  = process.env.SENDER_EMAIL  || 'hello@quantumhospitalitysolutions.com';
 const SENDER_NAME   = process.env.SENDER_NAME   || 'Somehow I Managed';
-const NOTIFY_EMAIL  = process.env.NOTIFY_EMAIL; // owner notification (optional)
 const BREVO_LIST_ID = 2;
 
 const SUPABASE_URL  = process.env.SUPABASE_URL;
@@ -193,9 +192,11 @@ exports.handler = async (event) => {
   }
 
   // ── 6. Notify the owner of every new signup ───────────────────────────────
+  const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
+  console.log('[notify] NOTIFY_EMAIL set:', !!NOTIFY_EMAIL, NOTIFY_EMAIL ? `(${NOTIFY_EMAIL})` : '');
   if (NOTIFY_EMAIL) {
     const signupTime = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' });
-    await brevo('POST', '/v3/smtp/email', {
+    const notifyRes = await brevo('POST', '/v3/smtp/email', {
       sender: { name: SENDER_NAME, email: SENDER_EMAIL },
       to:     [{ email: NOTIFY_EMAIL }],
       subject: `New signup: ${name}`,
@@ -212,7 +213,8 @@ exports.handler = async (event) => {
         </div>
       `,
       textContent: `New signup!\n\nName: ${name}\nEmail: ${email}\nCountry: ${country || '—'}\nSource: ${source}\nTime: ${signupTime} ET`,
-    }).catch(err => console.error('Owner notification failed:', err));
+    });
+    console.log('[notify] result:', notifyRes.status, JSON.stringify(notifyRes.body));
   }
 
   if (emailRes.status !== 201) {
