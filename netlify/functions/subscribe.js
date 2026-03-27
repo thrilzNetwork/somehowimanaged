@@ -4,13 +4,6 @@
  * POST /.netlify/functions/subscribe
  * Body: { "name": "...", "email": "..." }
  *
- * Flow:
- *   1. Check Supabase — if email exists, return instant access (no duplicate email)
- *   2. Insert contact into Supabase
- *   3. Add contact to Brevo list
- *   4. Send welcome transactional email via Brevo
- *   5. Mark welcome_email_sent = true in Supabase
- *
  * Required env vars:
  *   BREVO_API_KEY          – Brevo API key
  *   SENDER_EMAIL           – Verified Brevo sender address
@@ -79,10 +72,51 @@ function json(status, body) {
   };
 }
 
+// ─── Owner notification ───────────────────────────────────────────────────────
+
+async function notifyOwner({ name, email, country, source }) {
+  const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
+  console.log('[notify] NOTIFY_EMAIL configured:', !!NOTIFY_EMAIL, NOTIFY_EMAIL ? `→ ${NOTIFY_EMAIL}` : '(not set — add NOTIFY_EMAIL env var in Netlify)');
+
+  if (!NOTIFY_EMAIL) return;
+
+  const signupTime = new Date().toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+
+  try {
+    const res = await brevo('POST', '/v3/smtp/email', {
+      sender:      { name: SENDER_NAME, email: SENDER_EMAIL },
+      to:          [{ email: NOTIFY_EMAIL }],
+      subject:     `New signup: ${name}`,
+      htmlContent: `<div style="font-family:sans-serif;max-width:480px;padding:1.5rem;color:#111">
+        <p style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">New signup — Somehow I Managed</p>
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+          <tr><td style="padding:0.4rem 0;color:#666;width:80px">Name</td><td style="padding:0.4rem 0;font-weight:600">${name}</td></tr>
+          <tr><td style="padding:0.4rem 0;color:#666">Email</td><td style="padding:0.4rem 0;font-weight:600">${email}</td></tr>
+          <tr><td style="padding:0.4rem 0;color:#666">Country</td><td style="padding:0.4rem 0">${country || '—'}</td></tr>
+          <tr><td style="padding:0.4rem 0;color:#666">Source</td><td style="padding:0.4rem 0;color:#888">${source}</td></tr>
+          <tr><td style="padding:0.4rem 0;color:#666">Time</td><td style="padding:0.4rem 0">${signupTime} ET</td></tr>
+        </table>
+      </div>`,
+      textContent: `New signup!\n\nName: ${name}\nEmail: ${email}\nCountry: ${country || '—'}\nSource: ${source}\nTime: ${signupTime} ET`,
+    });
+
+    if (res.status === 201) {
+      console.log('[notify] Sent successfully to', NOTIFY_EMAIL);
+    } else {
+      console.error('[notify] Brevo rejected notification. Status:', res.status, 'Body:', JSON.stringify(res.body));
+    }
+  } catch (err) {
+    console.error('[notify] Exception sending notification:', err.message);
+  }
+}
+
 // ─── Handler ─────────────────────────────────────────────────────────────────
 
 exports.handler = async (event) => {
-  // CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 204,
@@ -97,7 +131,6 @@ exports.handler = async (event) => {
 
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
 
-  // Parse body
   let name, email;
   try {
     ({ name, email } = JSON.parse(event.body || '{}'));
@@ -122,7 +155,6 @@ exports.handler = async (event) => {
       prefer: '',
     });
     if (check && check.data && check.data.length > 0) {
-      // Already a member — grant access silently, no email sent
       return json(200, {
         alreadyMember: true,
         message: `Welcome back, ${firstName}! You're already on the list.`,
@@ -133,20 +165,18 @@ exports.handler = async (event) => {
   // ── 2. Save to Supabase ───────────────────────────────────────────────────
   if (SUPABASE_URL && SUPABASE_KEY) {
     const insert = await supa('POST', 'contacts', {
-      body: {
-        name,
-        email,
-        welcome_email_sent: false,
-        source,
-        country,
-      },
+      body: { name, email, welcome_email_sent: false, source, country },
     });
     if (insert && insert.status !== 201) {
       console.error('Supabase insert error:', insert);
     }
   }
 
-  // ── 3. Add to Brevo list ──────────────────────────────────────────────────
+  // ── 3. Notify owner (fire-and-don't-block) ────────────────────────────────
+  // Runs before Brevo list add so owner is always alerted even if Brevo has issues
+  notifyOwner({ name, email, country, source });
+
+  // ── 4. Add to Brevo list ──────────────────────────────────────────────────
   const contactRes = await brevo('POST', '/v3/contacts', {
     email,
     attributes:    { FIRSTNAME: firstName, LASTNAME: lastName },
@@ -159,7 +189,7 @@ exports.handler = async (event) => {
     return json(502, { error: contactRes.body?.message || 'Failed to add contact' });
   }
 
-  // ── 4. Send welcome email ─────────────────────────────────────────────────
+  // ── 5. Send welcome email ─────────────────────────────────────────────────
   const emailRes = await brevo('POST', '/v3/smtp/email', {
     sender:      { name: SENDER_NAME, email: SENDER_EMAIL },
     to:          [{ email, name }],
@@ -183,7 +213,7 @@ exports.handler = async (event) => {
     textContent: `Hey ${firstName},\n\nYou're in! Welcome to Somehow I Managed.\n\nWe'll keep you posted on the book and everything we're building.\n\n— ${SENDER_NAME}`,
   });
 
-  // ── 5. Mark welcome email sent in Supabase ────────────────────────────────
+  // ── 6. Mark welcome email sent ────────────────────────────────────────────
   if (emailRes.status === 201 && SUPABASE_URL && SUPABASE_KEY) {
     await supa('PATCH', 'contacts', {
       query: `?email=eq.${encodeURIComponent(email)}`,
@@ -191,34 +221,8 @@ exports.handler = async (event) => {
     });
   }
 
-  // ── 6. Notify the owner of every new signup ───────────────────────────────
-  const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
-  console.log('[notify] NOTIFY_EMAIL set:', !!NOTIFY_EMAIL, NOTIFY_EMAIL ? `(${NOTIFY_EMAIL})` : '');
-  if (NOTIFY_EMAIL) {
-    const signupTime = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' });
-    const notifyRes = await brevo('POST', '/v3/smtp/email', {
-      sender: { name: SENDER_NAME, email: SENDER_EMAIL },
-      to:     [{ email: NOTIFY_EMAIL }],
-      subject: `New signup: ${name}`,
-      htmlContent: `
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:480px;margin:0 auto;padding:1.5rem;color:#111">
-          <p style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">📬 New signup on Somehow I Managed</p>
-          <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
-            <tr><td style="padding:0.4rem 0;color:#666;width:80px">Name</td><td style="padding:0.4rem 0;font-weight:600">${name}</td></tr>
-            <tr><td style="padding:0.4rem 0;color:#666">Email</td><td style="padding:0.4rem 0;font-weight:600">${email}</td></tr>
-            <tr><td style="padding:0.4rem 0;color:#666">Country</td><td style="padding:0.4rem 0">${country || '—'}</td></tr>
-            <tr><td style="padding:0.4rem 0;color:#666">Source</td><td style="padding:0.4rem 0;font-size:0.8rem;color:#888">${source}</td></tr>
-            <tr><td style="padding:0.4rem 0;color:#666">Time</td><td style="padding:0.4rem 0">${signupTime} ET</td></tr>
-          </table>
-        </div>
-      `,
-      textContent: `New signup!\n\nName: ${name}\nEmail: ${email}\nCountry: ${country || '—'}\nSource: ${source}\nTime: ${signupTime} ET`,
-    });
-    console.log('[notify] result:', notifyRes.status, JSON.stringify(notifyRes.body));
-  }
-
   if (emailRes.status !== 201) {
-    console.error('Brevo email error:', emailRes.status, JSON.stringify(emailRes.body));
+    console.error('Brevo welcome email error:', emailRes.status, JSON.stringify(emailRes.body));
     return json(207, {
       message: `You're on the list, ${firstName}! (Welcome email delayed — check Brevo sender verification.)`,
       emailError: emailRes.body?.message,
