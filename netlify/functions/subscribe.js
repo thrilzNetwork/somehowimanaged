@@ -113,6 +113,8 @@ exports.handler = async (event) => {
 
   const firstName = name.split(' ')[0];
   const lastName  = name.split(' ').slice(1).join(' ') || '';
+  const country   = event.headers?.['x-country'] || null;
+  const source    = event.headers?.['referer'] || 'direct';
 
   // ── 1. Deduplicate via Supabase ───────────────────────────────────────────
   if (SUPABASE_URL && SUPABASE_KEY) {
@@ -136,8 +138,8 @@ exports.handler = async (event) => {
         name,
         email,
         welcome_email_sent: false,
-        source:  event.headers?.['referer'] || 'direct',
-        country: event.headers?.['x-country'] || null,
+        source,
+        country,
       },
     });
     if (insert && insert.status !== 201) {
