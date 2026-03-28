@@ -313,10 +313,10 @@
     (function init() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        // Already signed up — go straight to access, no form
+        // Already signed up — send straight to the book
         try {
-          const { name } = JSON.parse(stored);
-          showAccess(name);
+          JSON.parse(stored); // validate
+          window.location.replace('https://somehowimanagedfreeversionbook.vercel.app/');
         } catch {
           localStorage.removeItem(STORAGE_KEY);
         }
@@ -379,7 +379,7 @@
           // Lock in access permanently, discard the in-progress draft
           localStorage.removeItem(DRAFT_KEY);
           localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, email, ts: Date.now() }));
-          showAccess(name);
+          window.location.href = 'https://somehowimanagedfreeversionbook.vercel.app/';
         } else {
           throw new Error(data.error || 'Something went wrong. Please try again.');
         }
