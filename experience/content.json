@@ -1,0 +1,202 @@
+{
+  "_readme": "All landing-page words and links live here. Edit, run `node build.mjs`, deploy. Leave a link empty (\"\") to hide its button.",
+  "site": {
+    "title": "Somehow I Managed — Field notes from 21 years running hotels | Alejandro Soria",
+    "description": "A free hotel operations book by Alejandro Soria, a multi-brand general manager. Six field notes on reading the building, leading people, and running the business behind the work. Read or listen free.",
+    "url": "https://somehowimanage.netlify.app",
+    "ogImage": "/og.png",
+    "lang": "en",
+    "themeColor": "#0b0d12"
+  },
+  "nav": {
+    "brand": "Somehow I Managed",
+    "links": [
+      { "label": "Lessons", "href": "#lessons" },
+      { "label": "Author", "href": "#author" },
+      { "label": "Quiz", "href": "#quiz" },
+      { "label": "Read", "href": "#read" }
+    ],
+    "cta": "Read free"
+  },
+  "hero": {
+    "eyebrow": "Field notes from 21 years running hotels",
+    "headline": "The building always knows first.",
+    "headlineAccent": "This book teaches you to hear it.",
+    "sub": "Somehow I Managed is the hotel operations book I wish someone had handed me on day one. Six lessons from a multi-brand general manager who has run hotels, fixed them, and opened one from the ground up.",
+    "readCta": "Read it free",
+    "listenCta": "Listen",
+    "signupLabel": "Get new chapters by email",
+    "signupCta": "Join",
+    "byline": "By Alejandro Soria",
+    "scrollHint": "Scroll"
+  },
+  "audiences": {
+    "title": "Who it's for",
+    "sub": "Anyone who has ever carried a building through a hard shift.",
+    "items": [
+      { "label": "New to hotels", "line": "Learn what business you actually joined, from the floor up." },
+      { "label": "Supervisors", "line": "Understand why the GM is staring at labor while the lobby is full." },
+      { "label": "General managers", "line": "Remember that the person cleaning a room may understand the operation in a way no dashboard can." },
+      { "label": "Owners and asset managers", "line": "See that guest experience and asset value are not competing ideas." }
+    ]
+  },
+  "lessons": {
+    "title": "Six lessons. No SOPs.",
+    "sub": "Not seventy-three steps for checking a room. The judgment a checklist can't give you.",
+    "cta": "Read chapter"
+  },
+  "author": {
+    "eyebrow": "About the author",
+    "name": "Alejandro Soria",
+    "role": "Multi-brand general manager and hospitality operator",
+    "bio": [
+      "Alejandro has spent 21 years in hotels: full-service, select-service and extended-stay, across several major brands. He has turned properties around, led teams through storms and sold-out weekends, and opened a hotel from the ground up.",
+      "He writes about the work the way it actually happens: the building, the people, and the business plan behind both. These field notes are updated as he goes."
+    ],
+    "photo": "",
+    "photoAlt": "Alejandro Soria",
+    "stats": [
+      { "value": "21", "label": "years in hotel operations" },
+      { "value": "1", "label": "hotel opened from the ground up" },
+      { "value": "6", "label": "lessons, free to read and hear" }
+    ],
+    "linkedin": "",
+    "linkedinLabel": "Follow on LinkedIn"
+  },
+  "quiz": {
+    "eyebrow": "Two-minute quiz",
+    "title": "What kind of operator are you?",
+    "sub": "Six quick questions. Find your instinct, and the chapter that will stretch you.",
+    "start": "Start the quiz",
+    "questions": [
+      {
+        "q": "Your first week at a new hotel. Where do you start?",
+        "options": [
+          { "text": "Walk every floor, closet and mechanical room", "ch": "s01" },
+          { "text": "Sit down one-on-one with every department lead", "ch": "s02" },
+          { "text": "Read the P&L and the owner's plan for the asset", "ch": "s03" },
+          { "text": "Map the problems that keep coming back", "ch": "s04" }
+        ]
+      },
+      {
+        "q": "A guest is furious at the front desk. What do you do first?",
+        "options": [
+          { "text": "Listen. Human first, facts second", "ch": "s05" },
+          { "text": "Stand beside your agent, coach them later", "ch": "s02" },
+          { "text": "Find the process that failed this guest", "ch": "s04" },
+          { "text": "Check what we promised at booking", "ch": "s03" }
+        ]
+      },
+      {
+        "q": "Labor ran over plan last week. Your first question?",
+        "options": [
+          { "text": "Did pickup beat the forecast?", "ch": "s03" },
+          { "text": "What did the floor look like those days?", "ch": "s01" },
+          { "text": "Is the schedule built from habit or from demand?", "ch": "s04" },
+          { "text": "Is the team running on empty?", "ch": "s05" }
+        ]
+      },
+      {
+        "q": "What drains you the most?",
+        "options": [
+          { "text": "The same problem returning every week", "ch": "s04" },
+          { "text": "Meetings full of information and empty of decisions", "ch": "s06" },
+          { "text": "People who won't tell me the truth", "ch": "s02" },
+          { "text": "Nobody seeing the whole picture", "ch": "s01" }
+        ]
+      },
+      {
+        "q": "Your best day at work looks like...",
+        "options": [
+          { "text": "A manager makes the call without phoning me", "ch": "s06" },
+          { "text": "The numbers close exactly where they should", "ch": "s03" },
+          { "text": "A new hire finally gets it", "ch": "s02" },
+          { "text": "A storm hits and the team stays calm", "ch": "s05" }
+        ]
+      },
+      {
+        "q": "Where are you in your career right now?",
+        "options": [
+          { "text": "New to hotels", "ch": "s01", "role": "New to hotels" },
+          { "text": "Supervisor or department lead", "ch": "s02", "role": "Supervisor" },
+          { "text": "General manager", "ch": "s06", "role": "General manager" },
+          { "text": "Owner or asset side", "ch": "s03", "role": "Owner or asset manager" }
+        ]
+      }
+    ],
+    "results": {
+      "s01": { "name": "The Floor Reader", "line": "You trust what you see over what the report says. You walk first and ask why." },
+      "s02": { "name": "The People Builder", "line": "You know nothing moves without people, and you build teams that tell you the truth." },
+      "s03": { "name": "The Numbers Translator", "line": "You see the hotel as an economic model and connect the floor to the P&L." },
+      "s04": { "name": "The System Fixer", "line": "You get tired of solving the same problem twice, so you fix what keeps causing it." },
+      "s05": { "name": "The Pressure Holder", "line": "You absorb complexity and return clarity. The team gets calmer when you walk in." },
+      "s06": { "name": "The Long-Game Operator", "line": "You build an operation that runs without you, and you still enjoy the ride." }
+    },
+    "resultIntro": "Your operator instinct",
+    "stretchIntro": "The chapter that will stretch you",
+    "readCta": "Read your chapter",
+    "retake": "Retake",
+    "emailTitle": "Email me my result",
+    "emailSub": "We'll save your result and send new chapters as they're written.",
+    "emailCta": "Send it",
+    "emailSuccess": "Saved. Watch your inbox for new chapters."
+  },
+  "readersList": {
+    "eyebrow": "The Readers' List",
+    "title": "New field notes, when they're written.",
+    "sub": "One email when a new chapter or field note goes up. No spam, no sales funnel, unsubscribe any time.",
+    "namePlaceholder": "First name",
+    "emailPlaceholder": "Email address",
+    "cta": "Join the Readers' List",
+    "success": "You're on the list. Thank you for reading.",
+    "error": "That didn't go through. Please try again in a moment."
+  },
+  "midSignup": {
+    "afterChapter": "s02",
+    "title": "Two chapters in. Want the next ones in your inbox?",
+    "sub": "Join the Readers' List for new field notes as they're written."
+  },
+  "attenda": {
+    "line": "Running a hotel team? I'm also building Attenda, a simpler way to run the daily work of a hotel.",
+    "linkText": "attendaapp.com",
+    "url": "https://attendaapp.com"
+  },
+  "reader": {
+    "eyebrow": "The book",
+    "title": "Read it here. Free.",
+    "sub": "Every chapter, every word. Press listen on any chapter to hear it instead.",
+    "toc": "Chapters",
+    "listen": "Listen",
+    "pause": "Pause",
+    "minRead": "min read",
+    "fieldNoteLabel": "Field note"
+  },
+  "share": {
+    "title": "Pass it on",
+    "sub": "Know someone carrying a building right now? Send them the book.",
+    "text": "Somehow I Managed: free field notes from 21 years running hotels.",
+    "copied": "Link copied"
+  },
+  "podcast": {
+    "label": "Podcast feed",
+    "feed": "/feed.xml"
+  },
+  "footer": {
+    "line": "For the ones who carry the building.",
+    "copyright": "© Alejandro Soria"
+  },
+  "audio": {
+    "base": "/audio/",
+    "fallbackBase": "https://6aae8b8470c940a9d9b067ae--somehowimanage.netlify.app/audio/",
+    "tracks": {
+      "dedication": { "file": "dedication.mp3", "title": "Dedication", "seconds": 43 },
+      "before": { "file": "before.mp3", "title": "Before We Start", "seconds": 382 },
+      "s01": { "file": "s01.mp3", "title": "01 · Learn the Building", "seconds": 991 },
+      "s02": { "file": "s02.mp3", "title": "02 · People Are the Business", "seconds": 830 },
+      "s03": { "file": "s03.mp3", "title": "03 · Understand the Business Plan", "seconds": 950 },
+      "s04": { "file": "s04.mp3", "title": "04 · Fix the System, Not the Symptom", "seconds": 889 },
+      "s05": { "file": "s05.mp3", "title": "05 · Hold the Pressure", "seconds": 756 },
+      "s06": { "file": "s06.mp3", "title": "06 · Enjoy the Ride", "seconds": 844 }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "somehowimanaged-book-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs && sh scripts/pull-legacy-assets.sh"
+  }
+}

@@ -1,0 +1,4 @@
+# Deploy settings for the book site (this folder only).
+[build]
+  command = "node build.mjs && sh scripts/pull-legacy-assets.sh"
+  publish = "dist"
