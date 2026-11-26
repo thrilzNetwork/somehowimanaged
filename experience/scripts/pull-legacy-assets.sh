@@ -12,4 +12,5 @@ for f in audio/dedication.mp3 audio/before.mp3 audio/s01.mp3 audio/s02.mp3 audio
   if curl -fsSL --retry 3 -o "dist/$f.tmp" "$SRC/$f"; then mv "dist/$f.tmp" "dist/$f"; ok=$((ok+1)); else rm -f "dist/$f.tmp"; echo "could not copy $f"; fail=$((fail+1)); fi
 done
 echo "Legacy assets: $ok copied, $fail missing."
-[ "$fail" -eq 0 ]
+echo "warning: continuing without $fail missing legacy assets (source deploy is gone)"
+exit 0
